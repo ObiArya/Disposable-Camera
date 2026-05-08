@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, RefreshCw, Timer, Sparkles, X, Check, Loader2, Maximize2 } from 'lucide-react';
+import { Camera, RefreshCw, Timer, Sparkles, X, Check, Loader2, Maximize2, HelpCircle } from 'lucide-react';
 import { cn, incrementPhotoCount, getPhotoCount, generateDeviceId, getDeviceLimit } from '../lib/utils';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -25,6 +25,19 @@ export default function CameraView() {
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
 
   const [isMirrored, setIsMirrored] = useState(false); // Default to false as requested
+  const [showHelp, setShowHelp] = useState(false);
+
+  useEffect(() => {
+    const tourSeen = localStorage.getItem('gd2026_tour_seen');
+    if (!tourSeen) {
+      setShowHelp(true);
+    }
+  }, []);
+
+  const closeHelp = () => {
+    setShowHelp(false);
+    localStorage.setItem('gd2026_tour_seen', 'true');
+  };
 
   const startCamera = async (mode: 'user' | 'environment') => {
     try {
@@ -233,6 +246,12 @@ export default function CameraView() {
           {!capturedImage && (
             <div className="absolute top-6 right-6 z-40 flex flex-col gap-3">
               <button 
+                onClick={() => setShowHelp(true)}
+                className="p-3 bg-black/40 backdrop-blur-md rounded-full border border-gold/20 text-gold"
+              >
+                <HelpCircle size={18} />
+              </button>
+              <button 
                 onClick={() => {
                   if (!document.fullscreenElement) {
                     document.documentElement.requestFullscreen().catch(e => console.error(e));
@@ -341,6 +360,92 @@ export default function CameraView() {
 
       <canvas ref={canvasRef} className="hidden" />
       
+      {/* Onboarding Overlay */}
+      <AnimatePresence>
+        {showHelp && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center p-6"
+          >
+            <div className="max-w-md w-full bg-black-rich border border-gold/30 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+               {/* Background Glow */}
+              <div className="absolute -top-24 -right-24 w-48 h-48 bg-gold/10 blur-[80px]" />
+              
+              <div className="relative z-10 text-center">
+                <div className="w-16 h-16 bg-gold/10 rounded-2xl flex items-center justify-center text-gold mx-auto mb-6">
+                   <Sparkles size={32} />
+                </div>
+                
+                <h2 className="text-3xl font-serif italic text-gold font-bold mb-2">How to Use</h2>
+                <p className="text-ivory/60 text-sm mb-8 font-sans">Quick guide for your Disposable Camera</p>
+                
+                <div className="space-y-6 text-left max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
+                  <div className="flex gap-4 items-start">
+                    <div className="w-10 h-10 rounded-full bg-ivory border border-gold/50 flex flex-shrink-0 items-center justify-center text-black">
+                      <div className="w-6 h-6 rounded-full border-2 border-black" />
+                    </div>
+                    <div>
+                      <h4 className="text-ivory font-bold text-sm">Shutter Button</h4>
+                      <p className="text-ivory/50 text-xs">Press the big center button to capture your moment.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 items-start">
+                    <div className="w-10 h-10 rounded-full bg-gold/10 border border-gold/40 flex flex-shrink-0 items-center justify-center text-gold">
+                      <Sparkles size={20} />
+                    </div>
+                    <div>
+                      <h4 className="text-ivory font-bold text-sm">Magic Filters</h4>
+                      <p className="text-ivory/50 text-xs">Switch between Normal, Vintage, B&W, and Warm photo styles.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 items-start">
+                    <div className="w-10 h-10 rounded-full bg-gold/10 border border-gold/40 flex flex-shrink-0 items-center justify-center text-gold">
+                      <Timer size={20} />
+                    </div>
+                    <div>
+                      <h4 className="text-ivory font-bold text-sm">Self-Timer</h4>
+                      <p className="text-ivory/50 text-xs">Set a 3, 5, or 10 second delay to get everyone in the frame.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 items-start">
+                    <div className="w-10 h-10 rounded-full bg-gold/10 border border-gold/40 flex flex-shrink-0 items-center justify-center text-gold font-mono text-[10px] uppercase font-bold">
+                      ROLL
+                    </div>
+                    <div>
+                      <h4 className="text-ivory font-bold text-sm">Film Count</h4>
+                      <p className="text-ivory/50 text-xs">You have 10 "films" per device. Use them for your best shots!</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 items-start">
+                    <div className="w-10 h-10 rounded-full bg-gold/10 border border-gold/40 flex flex-shrink-0 items-center justify-center text-gold">
+                      <Camera size={20} />
+                    </div>
+                    <div>
+                      <h4 className="text-ivory font-bold text-sm">Switch & Mirror</h4>
+                      <p className="text-ivory/50 text-xs">Switch between front/back camera and toggle mirroring.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={closeHelp}
+                  className="w-full mt-10 py-4 bg-gold text-black rounded-full font-bold uppercase tracking-[0.2em] text-sm shadow-xl shadow-gold/20"
+                >
+                  Start Capturing
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {error && (
         <div className="absolute inset-0 z-50 bg-black flex items-center justify-center p-8 text-center">
           <div className="max-w-xs p-8 border border-burgundy/30 bg-black-rich/50 backdrop-blur-xl rounded-3xl">
