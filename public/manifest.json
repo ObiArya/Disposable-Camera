@@ -1,0 +1,16 @@
+{
+  "name": "Gathering Dinner 2026",
+  "short_name": "GD 2026",
+  "description": "Digital Disposable Camera",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B0B0B",
+  "theme_color": "#C9A646",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1042/1042339.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

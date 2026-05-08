@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-gold: #C9A646;
+  --color-ivory: #F8F4EC;
+  --color-burgundy: #5A0F1C;
+  --color-champagne: #F3E5AB;
+  --color-black-rich: #0B0B0B;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", serif;
+}
+
+@layer base {
+  body {
+    @apply bg-black-rich text-ivory font-sans antialiased;
+  }
+}
+
+.disposable-grain {
+  position: relative;
+}
+
+.disposable-grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("https://www.transparenttextures.com/patterns/p6.png");
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+.vintage-filter {
+  filter: contrast(1.1) brightness(1.1) sepia(0.3) saturate(1.2);
+}
+
+.bw-filter {
+  filter: grayscale(1) contrast(1.2);
+}
+
+.warm-filter {
+  filter: sepia(0.5) contrast(0.9) brightness(1.1);
+}
+

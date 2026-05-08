@@ -1,0 +1,48 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Validation for Photo
+    function isValidPhoto(data) {
+      return data.keys().hasAll(['imageData', 'filter', 'deviceId', 'createdAt'])
+        && data.keys().size() <= 6
+        && data.imageData is string && data.imageData.size() > 0 && data.imageData.size() < 1048576 
+        && data.filter in ['none', 'vintage', 'bw', 'warm']
+        && data.deviceId is string && data.deviceId.size() <= 256
+        && data.createdAt == request.time;
+    }
+
+    match /photos/{photoId} {
+      // Anyone can create a photo (anonymous)
+      allow create: if isValidPhoto(incoming());
+
+      // Public read for the slideshow
+      allow read: if true; 
+      
+      // Allow deletion only if authenticated (admin sign-in)
+      allow delete: if request.auth != null;
+      allow update: if request.auth != null;
+    }
+  }
+}

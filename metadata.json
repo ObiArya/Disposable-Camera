@@ -1,0 +1,6 @@
+{
+  "name": "Gathering Dinner 2026 Event",
+  "description": "A digital disposable camera app for guests to capture and share moments anonymously during the Gathering Dinner 2026.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": []
+}

@@ -1,0 +1,40 @@
+{
+  "entities": {
+    "Photo": {
+      "title": "Photo",
+      "description": "A photo captured by a guest during the event.",
+      "type": "object",
+      "properties": {
+        "imageData": {
+          "type": "string",
+          "description": "Base64 encoded image data (optimized for low-res disposable feel)."
+        },
+        "filter": {
+          "type": "string",
+          "enum": ["none", "vintage", "bw", "warm"],
+          "description": "The filter applied to the photo."
+        },
+        "deviceId": {
+          "type": "string",
+          "description": "Anonymous identifier for the device that took the photo."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of when the photo was taken."
+        },
+        "approved": {
+          "type": "boolean",
+          "description": "Moderation status of the photo."
+        }
+      },
+      "required": ["imageData", "filter", "deviceId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "photos": {
+      "schema": "Photo",
+      "description": "Collection of all photos taken during the event."
+    }
+  }
+}
