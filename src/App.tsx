@@ -28,9 +28,12 @@ export default function App() {
     setPath(newPath);
   };
 
+  // Improved check for GitHub Pages sub-directory structure
+  const isAdminPath = path.endsWith('/admin-gallery');
+
   return (
     <div className="min-h-screen bg-black-rich">
-      {path === '/admin-gallery' ? (
+      {isAdminPath ? (
         <AdminGallery />
       ) : (
         <CameraView />
